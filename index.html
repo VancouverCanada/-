@@ -9,18 +9,18 @@
       --ice: #FFFFFF;
       --granite: #3E3935;
       --spruce: #004F6C;
-      --jay: #0074A4;
       --sea: #05A1C6;
-      --panel: rgba(255,255,255,0.92);
-      --shadow: 0 16px 40px rgba(0,0,0,0.18);
+      --panel: rgba(255, 255, 255, 0.94);
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
       --radius-lg: 26px;
-      --focus: 0 0 0 4px rgba(5,161,198,0.28);
-      --maxw: 1080px;
+      --focus: 0 0 0 4px rgba(5, 161, 198, 0.28);
+      --maxw: 1180px;
       --body: "Open Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
       --head: "Roboto", ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       background: var(--ice);
@@ -37,7 +37,7 @@
 
     .topbar {
       background: var(--ice);
-      border-bottom: 1px solid rgba(62,57,53,0.12);
+      border-bottom: 1px solid rgba(62, 57, 53, 0.12);
     }
 
     .topbar-inner {
@@ -54,7 +54,7 @@
       height: 12px;
       border-radius: 999px;
       background: var(--sea);
-      box-shadow: 0 0 0 6px rgba(5,161,198,0.12);
+      box-shadow: 0 0 0 6px rgba(5, 161, 198, 0.12);
       flex: 0 0 auto;
     }
 
@@ -72,7 +72,7 @@
       align-items: center;
       gap: 8px;
       font-size: 14px;
-      color: rgba(62,57,53,0.78);
+      color: rgba(62, 57, 53, 0.78);
       white-space: nowrap;
     }
 
@@ -82,8 +82,8 @@
       gap: 6px;
       padding: 6px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(62,57,53,0.12);
-      background: rgba(0,79,108,0.05);
+      border: 1px solid rgba(62, 57, 53, 0.12);
+      background: rgba(0, 79, 108, 0.05);
     }
 
     .step strong {
@@ -92,14 +92,13 @@
     }
 
     .step[aria-current="step"] {
-      background: rgba(0,79,108,0.12);
-      border-color: rgba(0,79,108,0.22);
+      background: rgba(0, 79, 108, 0.12);
+      border-color: rgba(0, 79, 108, 0.22);
     }
 
     .stage {
-      position: relative;
       flex: 1 1 auto;
-      padding: 20px 18px 26px;
+      padding: 20px 18px 28px;
       display: flex;
       justify-content: center;
     }
@@ -107,11 +106,18 @@
     .frame {
       width: 100%;
       max-width: var(--maxw);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .visual {
       position: relative;
       border-radius: var(--radius-lg);
       overflow: hidden;
       box-shadow: var(--shadow);
-      border: 1px solid rgba(62,57,53,0.12);
+      border: 1px solid rgba(62, 57, 53, 0.12);
       background: #f6f7f8;
       min-height: 560px;
     }
@@ -127,7 +133,7 @@
     .overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.50), rgba(0,0,0,0.10) 40%, rgba(0,0,0,0.06));
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.44), rgba(0, 0, 0, 0.08) 45%, rgba(0, 0, 0, 0.04));
       pointer-events: none;
     }
 
@@ -138,53 +144,18 @@
       width: min(200px, 22vw);
       max-width: 220px;
       height: auto;
-      filter: drop-shadow(0 12px 22px rgba(0,0,0,0.22));
-    }
-
-    .panel-toggle {
-      position: absolute;
-      right: 18px;
-      bottom: 18px;
-      z-index: 5;
-      border-radius: 999px;
-      padding: 10px 14px;
-      border: 1px solid rgba(255,255,255,0.45);
-      background: rgba(0,79,108,0.85);
-      color: var(--ice);
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    }
-
-    .panel-toggle:hover {
-      background: rgba(0,79,108,0.95);
+      filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.22));
     }
 
     .panel {
-      position: absolute;
-      right: 18px;
-      bottom: 72px;
-      width: min(460px, calc(100% - 80px));
-      max-height: min(72vh, 520px);
-      overflow: auto;
       background: var(--panel);
       border-radius: var(--radius-lg);
-      padding: 16px 16px 14px;
-      border: 1px solid rgba(255,255,255,0.55);
-      box-shadow: 0 14px 30px rgba(0,0,0,0.18);
-      backdrop-filter: blur(6px);
-      transform: translateY(12px);
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 180ms ease, opacity 180ms ease;
-      z-index: 4;
-    }
-
-    .frame.panel-open .panel {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: auto;
+      padding: 16px;
+      border: 1px solid rgba(62, 57, 53, 0.12);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(4px);
+      max-height: 560px;
+      overflow: auto;
     }
 
     .kicker {
@@ -192,7 +163,7 @@
       align-items: center;
       gap: 8px;
       font-size: 13px;
-      color: rgba(62,57,53,0.78);
+      color: rgba(62, 57, 53, 0.78);
       margin-bottom: 8px;
     }
 
@@ -201,7 +172,7 @@
       height: 10px;
       border-radius: 999px;
       background: var(--spruce);
-      box-shadow: 0 0 0 5px rgba(0,79,108,0.10);
+      box-shadow: 0 0 0 5px rgba(0, 79, 108, 0.10);
     }
 
     .prompt {
@@ -213,7 +184,7 @@
 
     .sub {
       margin: 0 0 12px;
-      color: rgba(62,57,53,0.82);
+      color: rgba(62, 57, 53, 0.82);
       font-size: 15px;
     }
 
@@ -224,8 +195,8 @@
 
     button.choice {
       appearance: none;
-      border: 1px solid rgba(0,79,108,0.22);
-      background: rgba(0,79,108,0.06);
+      border: 1px solid rgba(0, 79, 108, 0.22);
+      background: rgba(0, 79, 108, 0.06);
       color: var(--granite);
       text-align: left;
       padding: 10px 11px;
@@ -237,13 +208,12 @@
     }
 
     button.choice:hover {
-      background: rgba(0,79,108,0.10);
-      border-color: rgba(0,79,108,0.35);
+      background: rgba(0, 79, 108, 0.10);
+      border-color: rgba(0, 79, 108, 0.35);
       transform: translateY(-1px);
     }
 
-    button.choice:focus-visible,
-    .panel-toggle:focus-visible {
+    button.choice:focus-visible {
       outline: none;
       box-shadow: var(--focus);
     }
@@ -259,7 +229,7 @@
 
     .hint {
       font-size: 13px;
-      color: rgba(62,57,53,0.72);
+      color: rgba(62, 57, 53, 0.72);
     }
 
     .actions {
@@ -286,19 +256,19 @@
     .btn.primary:hover { background: #003E56; }
 
     .btn.secondary {
-      background: rgba(62,57,53,0.08);
+      background: rgba(62, 57, 53, 0.08);
       color: var(--granite);
-      border: 1px solid rgba(62,57,53,0.14);
+      border: 1px solid rgba(62, 57, 53, 0.14);
     }
 
-    .btn.secondary:hover { background: rgba(62,57,53,0.11); }
+    .btn.secondary:hover { background: rgba(62, 57, 53, 0.11); }
 
     .feedback {
       margin-top: 12px;
       border-radius: 16px;
       padding: 12px;
-      border: 1px solid rgba(62,57,53,0.14);
-      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(62, 57, 53, 0.14);
+      background: rgba(255, 255, 255, 0.78);
       display: none;
     }
 
@@ -314,17 +284,17 @@
     .feedback p {
       margin: 0;
       font-size: 14px;
-      color: rgba(62,57,53,0.86);
+      color: rgba(62, 57, 53, 0.86);
     }
 
     .feedback.good {
-      border-color: rgba(0,79,108,0.22);
-      background: rgba(5,161,198,0.10);
+      border-color: rgba(0, 79, 108, 0.22);
+      background: rgba(5, 161, 198, 0.10);
     }
 
     .feedback.bad {
-      border-color: rgba(227,89,72,0.28);
-      background: rgba(227,89,72,0.08);
+      border-color: rgba(227, 89, 72, 0.28);
+      background: rgba(227, 89, 72, 0.08);
     }
 
     .sr {
@@ -339,21 +309,26 @@
       white-space: nowrap;
     }
 
+    @media (max-width: 960px) {
+      .frame {
+        grid-template-columns: 1fr;
+      }
+
+      .visual {
+        min-height: 460px;
+      }
+
+      .panel {
+        max-height: none;
+      }
+    }
+
     @media (max-width: 820px) {
       .character { display: none; }
-      .panel {
-        left: 14px;
-        right: 14px;
-        bottom: 72px;
-        width: auto;
-        max-height: min(74vh, 560px);
-      }
-      .frame { min-height: 640px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      button.choice,
-      .panel { transition: none; }
+      button.choice { transition: none; }
     }
   </style>
 </head>
@@ -373,15 +348,14 @@
     </div>
 
     <main class="stage">
-      <section class="frame" id="frame" aria-live="polite">
-        <div class="bg" id="bg"></div>
-        <div class="overlay" aria-hidden="true"></div>
+      <section class="frame" aria-live="polite">
+        <div class="visual" aria-hidden="true">
+          <div class="bg" id="bg"></div>
+          <div class="overlay"></div>
+          <img class="character" src="assets/worker.png" alt="" />
+        </div>
 
-        <img class="character" src="assets/worker.png" alt="Worker wearing safety gear" />
-
-        <button class="panel-toggle" id="panelToggle" type="button" aria-expanded="false" aria-controls="scenarioPanel">Show scenario</button>
-
-        <div class="panel" id="scenarioPanel" role="group" aria-label="Scenario">
+        <div class="panel" role="group" aria-label="Scenario">
           <div class="kicker">
             <span class="dot" aria-hidden="true"></span>
             <span id="kickerText">Scenario</span>
@@ -500,8 +474,6 @@
     ];
 
     const els = {
-      frame: document.getElementById("frame"),
-      panelToggle: document.getElementById("panelToggle"),
       bg: document.getElementById("bg"),
       kickerText: document.getElementById("kickerText"),
       prompt: document.getElementById("prompt"),
@@ -524,14 +496,6 @@
     let idx = 0;
     let locked = false;
     let canContinue = false;
-    let panelOpen = false;
-
-    function setPanelState(open) {
-      panelOpen = open;
-      els.frame.classList.toggle("panel-open", open);
-      els.panelToggle.setAttribute("aria-expanded", String(open));
-      els.panelToggle.textContent = open ? "Hide scenario" : "Show scenario";
-    }
 
     function setStepper(step) {
       for (const s of [1, 2, 3]) {
@@ -553,7 +517,7 @@
       els.feedbackTitle.textContent = title;
       els.feedbackBody.textContent = body;
       els.feedback.setAttribute("aria-hidden", "false");
-      els.srStatus.textContent = title + ". " + body;
+      els.srStatus.textContent = `${title}. ${body}`;
     }
 
     function setBg(url) {
@@ -616,10 +580,6 @@
       } catch (e) {}
     }
 
-    els.panelToggle.addEventListener("click", () => {
-      setPanelState(!panelOpen);
-    });
-
     els.nextBtn.addEventListener("click", () => {
       if (!canContinue) return;
 
@@ -643,11 +603,9 @@
     els.restartBtn.addEventListener("click", () => {
       idx = 0;
       renderStep();
-      setPanelState(true);
     });
 
     renderStep();
-    setPanelState(false);
   </script>
 </body>
 </html>
