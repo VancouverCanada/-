@@ -1,39 +1,653 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Animated Navigation</title>
-  <link rel="icon" type="image/png" href="https://www.google.com/s2/favicons?domain=https://www.drustveneigre.rs/">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rodents: enclosed space with droppings</title>
+  <style>
+    :root {
+      --ice: #FFFFFF;
+      --granite: #3E3935;
+      --spruce: #004F6C;
+      --jay: #0074A4;
+      --sea: #05A1C6;
+      --panel: rgba(255,255,255,0.92);
+      --shadow: 0 16px 40px rgba(0,0,0,0.18);
+      --radius-lg: 26px;
+      --focus: 0 0 0 4px rgba(5,161,198,0.28);
+      --maxw: 1080px;
+      --body: "Open Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      --head: "Roboto", ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--ice);
+      color: var(--granite);
+      font-family: var(--body);
+      line-height: 1.4;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      background: var(--ice);
+      border-bottom: 1px solid rgba(62,57,53,0.12);
+    }
+
+    .topbar-inner {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .badge {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--sea);
+      box-shadow: 0 0 0 6px rgba(5,161,198,0.12);
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      font-family: var(--head);
+      font-size: 18px;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .stepper {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: rgba(62,57,53,0.78);
+      white-space: nowrap;
+    }
+
+    .step {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(62,57,53,0.12);
+      background: rgba(0,79,108,0.05);
+    }
+
+    .step strong {
+      font-weight: 700;
+      color: var(--granite);
+    }
+
+    .step[aria-current="step"] {
+      background: rgba(0,79,108,0.12);
+      border-color: rgba(0,79,108,0.22);
+    }
+
+    .stage {
+      position: relative;
+      flex: 1 1 auto;
+      padding: 20px 18px 26px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .frame {
+      width: 100%;
+      max-width: var(--maxw);
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(62,57,53,0.12);
+      background: #f6f7f8;
+      min-height: 560px;
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.02);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.50), rgba(0,0,0,0.10) 40%, rgba(0,0,0,0.06));
+      pointer-events: none;
+    }
+
+    .character {
+      position: absolute;
+      left: 28px;
+      bottom: 18px;
+      width: min(200px, 22vw);
+      max-width: 220px;
+      height: auto;
+      filter: drop-shadow(0 12px 22px rgba(0,0,0,0.22));
+    }
+
+    .panel-toggle {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      z-index: 5;
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(0,79,108,0.85);
+      color: var(--ice);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    .panel-toggle:hover {
+      background: rgba(0,79,108,0.95);
+    }
+
+    .panel {
+      position: absolute;
+      right: 18px;
+      bottom: 72px;
+      width: min(460px, calc(100% - 80px));
+      max-height: min(72vh, 520px);
+      overflow: auto;
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      padding: 16px 16px 14px;
+      border: 1px solid rgba(255,255,255,0.55);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+      backdrop-filter: blur(6px);
+      transform: translateY(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 180ms ease, opacity 180ms ease;
+      z-index: 4;
+    }
+
+    .frame.panel-open .panel {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(62,57,53,0.78);
+      margin-bottom: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--spruce);
+      box-shadow: 0 0 0 5px rgba(0,79,108,0.10);
+    }
+
+    .prompt {
+      margin: 0 0 10px;
+      font-family: var(--head);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .sub {
+      margin: 0 0 12px;
+      color: rgba(62,57,53,0.82);
+      font-size: 15px;
+    }
+
+    .choices {
+      display: grid;
+      gap: 9px;
+    }
+
+    button.choice {
+      appearance: none;
+      border: 1px solid rgba(0,79,108,0.22);
+      background: rgba(0,79,108,0.06);
+      color: var(--granite);
+      text-align: left;
+      padding: 10px 11px;
+      border-radius: 14px;
+      font-size: 15px;
+      line-height: 1.25;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    button.choice:hover {
+      background: rgba(0,79,108,0.10);
+      border-color: rgba(0,79,108,0.35);
+      transform: translateY(-1px);
+    }
+
+    button.choice:focus-visible,
+    .panel-toggle:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .footer {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: rgba(62,57,53,0.72);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: var(--spruce);
+      color: var(--ice);
+    }
+
+    .btn.primary:hover { background: #003E56; }
+
+    .btn.secondary {
+      background: rgba(62,57,53,0.08);
+      color: var(--granite);
+      border: 1px solid rgba(62,57,53,0.14);
+    }
+
+    .btn.secondary:hover { background: rgba(62,57,53,0.11); }
+
+    .feedback {
+      margin-top: 12px;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid rgba(62,57,53,0.14);
+      background: rgba(255,255,255,0.78);
+      display: none;
+    }
+
+    .feedback[aria-hidden="false"] { display: block; }
+
+    .feedback-title {
+      margin: 0 0 6px;
+      font-family: var(--head);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .feedback p {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(62,57,53,0.86);
+    }
+
+    .feedback.good {
+      border-color: rgba(0,79,108,0.22);
+      background: rgba(5,161,198,0.10);
+    }
+
+    .feedback.bad {
+      border-color: rgba(227,89,72,0.28);
+      background: rgba(227,89,72,0.08);
+    }
+
+    .sr {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 820px) {
+      .character { display: none; }
+      .panel {
+        left: 14px;
+        right: 14px;
+        bottom: 72px;
+        width: auto;
+        max-height: min(74vh, 560px);
+      }
+      .frame { min-height: 640px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      button.choice,
+      .panel { transition: none; }
+    }
+  </style>
 </head>
 <body>
-  <!-- Menu Overlay -->
-  <div class="overlay overlay-slide-left" id="overlay">
-    <!-- Menu Items -->
-    <nav>
-      <ul>
-        <li id="nav-1" class="slide-out-1"><a href="#home">Home</a></li>
-        <li id="nav-2" class="slide-out-2"><a href="#about">About</a></li>
-        <li id="nav-3" class="slide-out-3"><a href="#skills">Skills</a></li>
-        <li id="nav-4" class="slide-out-4"><a href="#projects">Projects</a></li>
-        <li id="nav-5" class="slide-out-5"><a href="#contact">Contact</a></li>
-      </ul>
-    </nav>
+  <div class="app">
+    <div class="topbar" role="banner">
+      <div class="topbar-inner">
+        <span class="badge" aria-hidden="true"></span>
+        <h1>Rodents: enclosed space with droppings</h1>
+
+        <div class="stepper" aria-label="Progress">
+          <span class="step" id="step1"><strong>1</strong> Identify</span>
+          <span class="step" id="step2"><strong>2</strong> Prevent</span>
+          <span class="step" id="step3"><strong>3</strong> Respond</span>
+        </div>
+      </div>
+    </div>
+
+    <main class="stage">
+      <section class="frame" id="frame" aria-live="polite">
+        <div class="bg" id="bg"></div>
+        <div class="overlay" aria-hidden="true"></div>
+
+        <img class="character" src="assets/worker.png" alt="Worker wearing safety gear" />
+
+        <button class="panel-toggle" id="panelToggle" type="button" aria-expanded="false" aria-controls="scenarioPanel">Show scenario</button>
+
+        <div class="panel" id="scenarioPanel" role="group" aria-label="Scenario">
+          <div class="kicker">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="kickerText">Scenario</span>
+          </div>
+
+          <p class="prompt" id="prompt">Loading</p>
+          <p class="sub" id="sub"></p>
+
+          <div class="choices" id="choices"></div>
+
+          <div class="feedback" id="feedback" aria-hidden="true">
+            <p class="feedback-title" id="feedbackTitle"></p>
+            <p id="feedbackBody"></p>
+          </div>
+
+          <div class="footer">
+            <div class="hint" id="hint">Select an option.</div>
+            <div class="actions">
+              <button class="btn secondary" id="restartBtn" type="button">Restart</button>
+              <button class="btn primary" id="nextBtn" type="button" disabled>Next</button>
+            </div>
+          </div>
+
+          <div class="sr" id="srStatus" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
   </div>
-  <!-- Menu Bars -->
-  <div class="menu-bars" id="menu-bars">
-    <div class="bar1"></div>
-    <div class="bar2"></div>
-    <div class="bar3"></div>
-  </div>
-  <!-- Sections -->
-  <section id="home"><a href="https://www.youtube.com/embed/pUbg6Y2hsMQ" target="_blank">Nikola Babic</a></section>
-  <section id="about"><h1>Learn More About Me</h1></section>
-  <section id="skills"><h1>These Are My Strengths</h1></section>
-  <section id="projects"><h1>These Are My Results</h1></section>
-  <section id="contact"><h1>Available Anytime</h1></section>
-  <!-- Script -->
-  <script src="script.js"></script>
+
+  <script>
+    const DATA = [
+      {
+        key: "identify",
+        step: 1,
+        bg: "assets/scene1_enclosed_room.svg",
+        kicker: "Identify",
+        prompt: "You see droppings near the doorway of a small room.",
+        sub: "What do you do first?",
+        options: [
+          {
+            text: "Stop and assess the space before going in.",
+            correct: true,
+            goodTitle: "Good call",
+            goodBody: "Treat droppings as a potential exposure risk. Stop work and take a moment to plan your next step."
+          },
+          {
+            text: "Step around it and keep working.",
+            correct: false,
+            badTitle: "Not the safest choice",
+            badBody: "You could disturb material and breathe in dust. Stop and assess before you enter."
+          },
+          {
+            text: "Sweep it up so the area looks clean.",
+            correct: false,
+            badTitle: "Avoid dry sweeping",
+            badBody: "Dry sweeping can put dust into the air. Stop and plan a safer approach first."
+          }
+        ]
+      },
+      {
+        key: "prevent",
+        step: 2,
+        bg: "assets/scene2_prevent.svg",
+        kicker: "Prevent",
+        prompt: "You decide to prevent exposure before you do anything else.",
+        sub: "What’s the best next step?",
+        options: [
+          {
+            text: "Ventilate where appropriate and use basic protection before you go back in.",
+            correct: true,
+            goodTitle: "That helps reduce risk",
+            goodBody: "Ventilation and basic protection can reduce exposure. Keep avoiding actions that kick up dust."
+          },
+          {
+            text: "Dry sweep the droppings into a pile and throw it out.",
+            correct: false,
+            badTitle: "Avoid this",
+            badBody: "Dry sweeping can put dust into the air. Use safer methods and basic protection."
+          },
+          {
+            text: "Use compressed air to blow the area clean.",
+            correct: false,
+            badTitle: "Avoid this",
+            badBody: "Blowing material around can spread dust. Choose ventilation, basic protection, and safer cleanup methods."
+          }
+        ]
+      },
+      {
+        key: "respond",
+        step: 3,
+        bg: "assets/scene3_respond.svg",
+        kicker: "Respond",
+        prompt: "You’ve identified the risk and taken steps to prevent exposure.",
+        sub: "What do you do next?",
+        options: [
+          {
+            text: "Isolate the area, tell your supervisor, and report through your site procedure, such as the Incident Management System (IMS).",
+            correct: true,
+            goodTitle: "Done",
+            goodBody: "Isolating the area and reporting helps keep others safe. Your supervisor can involve Occupational Hygiene or an OSH Specialist when needed."
+          },
+          {
+            text: "Finish the job quickly, then mention it later if someone asks.",
+            correct: false,
+            badTitle: "Report it right away",
+            badBody: "If you do not isolate and report, others may enter the space and be exposed. Stop and follow your site procedure."
+          },
+          {
+            text: "Take a photo and post it in a group chat so people know.",
+            correct: false,
+            badTitle: "Use your site procedure",
+            badBody: "A group chat does not replace reporting. Isolate the area and report through your normal process."
+          }
+        ]
+      }
+    ];
+
+    const els = {
+      frame: document.getElementById("frame"),
+      panelToggle: document.getElementById("panelToggle"),
+      bg: document.getElementById("bg"),
+      kickerText: document.getElementById("kickerText"),
+      prompt: document.getElementById("prompt"),
+      sub: document.getElementById("sub"),
+      choices: document.getElementById("choices"),
+      feedback: document.getElementById("feedback"),
+      feedbackTitle: document.getElementById("feedbackTitle"),
+      feedbackBody: document.getElementById("feedbackBody"),
+      hint: document.getElementById("hint"),
+      nextBtn: document.getElementById("nextBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      srStatus: document.getElementById("srStatus"),
+      steps: {
+        1: document.getElementById("step1"),
+        2: document.getElementById("step2"),
+        3: document.getElementById("step3"),
+      }
+    };
+
+    let idx = 0;
+    let locked = false;
+    let canContinue = false;
+    let panelOpen = false;
+
+    function setPanelState(open) {
+      panelOpen = open;
+      els.frame.classList.toggle("panel-open", open);
+      els.panelToggle.setAttribute("aria-expanded", String(open));
+      els.panelToggle.textContent = open ? "Hide scenario" : "Show scenario";
+    }
+
+    function setStepper(step) {
+      for (const s of [1, 2, 3]) {
+        els.steps[s].removeAttribute("aria-current");
+      }
+      els.steps[step].setAttribute("aria-current", "step");
+    }
+
+    function clearFeedback() {
+      els.feedback.setAttribute("aria-hidden", "true");
+      els.feedback.classList.remove("good", "bad");
+      els.feedbackTitle.textContent = "";
+      els.feedbackBody.textContent = "";
+    }
+
+    function showFeedback(type, title, body) {
+      els.feedback.classList.remove("good", "bad");
+      els.feedback.classList.add(type);
+      els.feedbackTitle.textContent = title;
+      els.feedbackBody.textContent = body;
+      els.feedback.setAttribute("aria-hidden", "false");
+      els.srStatus.textContent = title + ". " + body;
+    }
+
+    function setBg(url) {
+      els.bg.style.backgroundImage = `url('${url}')`;
+    }
+
+    function renderStep() {
+      locked = false;
+      canContinue = false;
+      clearFeedback();
+
+      const step = DATA[idx];
+      setStepper(step.step);
+      setBg(step.bg);
+
+      els.kickerText.textContent = step.kicker;
+      els.prompt.textContent = step.prompt;
+      els.sub.textContent = step.sub;
+      els.hint.textContent = "Select an option.";
+      els.nextBtn.textContent = idx === DATA.length - 1 ? "Finish" : "Next";
+      els.nextBtn.disabled = true;
+
+      els.choices.innerHTML = "";
+      step.options.forEach((opt) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice";
+        btn.textContent = opt.text;
+        btn.addEventListener("click", () => handleChoice(opt));
+        btn.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            btn.click();
+          }
+        });
+        els.choices.appendChild(btn);
+      });
+    }
+
+    function handleChoice(opt) {
+      if (locked) return;
+      locked = true;
+
+      if (opt.correct) {
+        canContinue = true;
+        showFeedback("good", opt.goodTitle, opt.goodBody);
+        els.hint.textContent = idx === DATA.length - 1 ? "Select Finish to complete." : "Select Next to continue.";
+        els.nextBtn.disabled = false;
+        return;
+      }
+
+      showFeedback("bad", opt.badTitle, opt.badBody);
+      els.hint.textContent = "Try again.";
+      locked = false;
+    }
+
+    function markCompleteForRise() {
+      try {
+        window.parent.postMessage({ type: "complete" }, "*");
+      } catch (e) {}
+    }
+
+    els.panelToggle.addEventListener("click", () => {
+      setPanelState(!panelOpen);
+    });
+
+    els.nextBtn.addEventListener("click", () => {
+      if (!canContinue) return;
+
+      if (idx < DATA.length - 1) {
+        idx += 1;
+        renderStep();
+        return;
+      }
+
+      markCompleteForRise();
+      els.kickerText.textContent = "Complete";
+      els.prompt.textContent = "You completed the scenario.";
+      els.sub.textContent = "You identified droppings, prevented exposure, and reported through the right process.";
+      els.choices.innerHTML = "";
+      clearFeedback();
+      els.hint.textContent = "You can close this interaction or restart.";
+      els.nextBtn.disabled = true;
+      els.srStatus.textContent = "Scenario complete.";
+    });
+
+    els.restartBtn.addEventListener("click", () => {
+      idx = 0;
+      renderStep();
+      setPanelState(true);
+    });
+
+    renderStep();
+    setPanelState(false);
+  </script>
 </body>
 </html>
